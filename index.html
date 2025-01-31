@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <title>CNCerial</title>
+</head>
+
+<body onload="runOnLoad();">
+  <div class="container py-4 px-3 mx-auto">
+    <header
+      class="d-flex justify-content-between align-items-md-center pb-3 mb-5 border-info border-bottom border-5 rounded-1">
+      <h1 class="w-25 text-left" onclick="showInfo();"><span>CNCerial</span><i
+          class="ms-2 bi bi-info-circle text-info h5 align-middle m-0"></i></h1>
+      <h4 class="w-25 text-right">
+        <span>NC Program Transmission Utility</span>
+      </h4>
+    </header>
+
+    <div class="list-group rounded-3" id="mainMenu">
+      <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active"
+        aria-current="true" id="openFileButton" onclick="openFile();">
+
+        <i class=" d-flex bi bi-folder2-open text-info h2 align-self-center m-0"></i>
+
+        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+          <h6 class="m-0">Open NC File or Config File</h6>
+          <small class="opacity-50 text-nowrap" id="fileNameDisplay">No file selected</small>
+        </div>
+      </div>
+
+      <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active"
+        aria-current="true" id="selectPortButton" onclick="configSerial();">
+
+        <i class=" d-flex bi bi-plug text-info h2 align-self-center m-0"></i>
+
+        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+          <h6 class="m-0">Select Port</h6>
+          <small class="opacity-50 text-nowrap" id="portNameDisplay">No port selected</small>
+        </div>
+      </div>
+
+      <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active"
+        aria-current="true" onclick="" id="serialConfigButton" data-bs-toggle="modal" data-bs-target="#serialModal">
+
+        <i class="d-flex bi bi-terminal text-info h2 align-self-center m-0"></i>
+
+        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+          <h6 class="m-0">Serial Configuration</h6>
+          <small class="opacity-50 text-nowrap" id="serialDisplayElement">Not Configured</small>
+        </div>
+      </div>
+
+
+
+
+      <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3"
+        aria-current="true" onclick="">
+
+        <i class="d-flex bi bi-arrows-collapse-vertical text-info h2 align-self-center m-0"></i>
+
+        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+          <span class="w-25">
+            <h6 class="m-0">Trim</h6><small class="opacity-50 text-nowrap">Removes Selected</small>
+          </span>
+          <div class="form-check form-switch d-flex align-items-center m-0">
+            <input class="form-check-input h3 m-0" type="checkbox" role="switch" id="trimWhitespaceCheck">
+            <label class="form-check-label ms-4 align-middle" for="trimWhitespaceCheck">Whitespace</label>
+          </div>
+          <div class="form-check form-switch d-flex align-items-center m-0">
+            <input class="form-check-input h3 m-03" type="checkbox" role="switch" id="trimCommentsCheck">
+            <label class="form-check-label ms-4 align-middle" for="trimCommentsCheck">Comments</label>
+          </div>
+          <div class="form-check form-switch d-flex align-items-center m-0">
+            <input class="form-check-input h3" type="checkbox" role="switch" id="trimLineNumbersCheck">
+            <label class="form-check-label ms-4 align-middle" for="trimLineNumbersCheck">Line Numbers</label>
+          </div>
+
+          <span class="w-10"><small class="opacity-50 text-nowrap" id="savedPercentDisplayElement"></small></span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3"
+      aria-current="true" onclick="">
+
+      <i class="d-flex bi bi-pencil text-info h2 align-self-center m-0"></i>
+
+      <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+        <span class="w-25">
+          <h6 class="m-0">Program Rename</h6><small class="opacity-50 text-nowrap">Optionally change name</small>
+        </span>
+        <div class="input-group mb-0 w-auto">
+          <span class="input-group-text" id="basic-addon1">O</span>
+          <input type="text" class="form-control text-info" id="renameInput" placeholder="1000" aria-label="ProgName"
+            aria-describedby="basic-addon1">
+        </div>
+      </div>
+    </div>
+    <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active locked"
+      aria-current="true" id="sendButton" onclick="sendSerial();">
+
+      <i class="d-flex bi bi-arrow-bar-up text-info h2 align-self-center m-0"></i>
+
+      <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+        <h6 class="m-0">Send NC File</h6>
+
+        <small class="opacity-50 text-nowrap text-end" id="fileSizeDisplay">Not Ready</small>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="modal fade" id="serialModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 " id="exampleModalLabel">Serial Configuration</h1>
+        </div>
+        <div class="modal-body border-none">
+          <div class="list-group">
+            <div>
+              <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active"
+                data-bs-toggle="dropdown" aria-expanded="false">
+
+                <i class="d-flex bi bi-file-binary text-info h4 align-self-center m-0"></i>
+
+                <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                  <h6 class="m-0">Baud Rate</h6>
+                  <small class="opacity-50 text-nowrap" id="baudDisplayElement">Not Set</small>
+                </div>
+
+                <ul class="dropdown-menu">
+                  <li>
+                    <p class="dropdown-item" onclick="setBaud(4800)">4800</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setBaud(9600)">9600</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setBaud(19200)">19200</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setBaud(38400)">38400</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setBaud(57600)">57600</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setBaud(115200)">115200</p>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+
+            <div>
+              <div
+                class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active "
+                data-bs-toggle="dropdown" aria-expanded="false">
+
+                <i class="d-flex bi bi-clipboard-check text-info h4 align-self-center m-0"></i>
+
+                <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                  <h6 class="m-0">Parity</h6>
+                  <small class="opacity-50 text-nowrap" id="parityDisplayElement">Not Set</small>
+                </div>
+                <ul class="dropdown-menu">
+                  <li>
+                    <p class="dropdown-item" onclick="setParity('None')">None</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setParity('Even')">Even</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setParity('Odd')">Odd</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <div
+                class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active "
+                data-bs-toggle="dropdown" aria-expanded="false">
+
+                <i class="d-flex bi bi-activity text-info h2 align-self-center m-0"></i>
+
+                <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                  <h6 class="m-0">Data Bits</h6>
+                  <small class="opacity-50 text-nowrap" id="dataBitsDisplayElement">Not Set</small>
+                </div>
+                <ul class="dropdown-menu">
+                  <li>
+                    <p class="dropdown-item" onclick="setDataBits(5)">5</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setDataBits(6)">6</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setDataBits(7)">7</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setDataBits(8)">8</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <div
+                class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active "
+                data-bs-toggle="dropdown" aria-expanded="false">
+
+                <i class="d-flex bi bi-slash-circle text-info h4 align-self-center m-0"></i>
+
+                <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                  <h6 class="m-0">Stop Bits</h6>
+                  <small class="opacity-50 text-nowrap" id="stopBitsDisplayElement">Not Set</small>
+                </div>
+                <ul class="dropdown-menu">
+                  <li>
+                    <p class="dropdown-item" onclick="setStopBits(1)">1</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setStopBits(2)">2</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+
+            <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3"
+              aria-current="true" onclick="">
+
+              <i class="d-flex bi bi-arrow-left-right  text-info h4 align-self-center m-0"></i>
+
+              <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                <h6 class="m-0">Flow Control</h6>
+                <!-- <div class="form-check form-check-inline">
+                  <input class="form-check-input flowControlCheck" type="checkbox" id="handshakeXON" value="XON">
+                  <label class="form-check-label" for="handshakeXON">Software (XOFF)</label>
+                </div> -->
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input flowControlCheck" type="checkbox" id="handshakeRTS" value="RTS">
+                  <label class="form-check-label" for="handshakeRTS">Hardware (RTS)</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active"
+              aria-current="true" onclick="saveConfig();">
+
+              <i class="d-flex bi bi-filetype-json text-info h4 align-self-center m-0"></i>
+
+              <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                <h6 class="m-0">Save Configuration</h6>
+                <small class="opacity-50 text-nowrap">NCerial_config.json</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer ">
+          <button type="button" class="btn btn-outline-info" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="modal fade" id="webSerialSupportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="webSerialSupportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="webSerialSupportModalLabel">WebSerial API</h1>
+
+        </div>
+        <div class="modal-body border-none text-center">
+          <h1>Sorry!</h1><br>
+          <h4>Your web browser doesn't support <span class="text-info">WebSerial</span></h4><br>
+          <small class="opacity-50">Or you're not using HTTPS</small><br><br>
+          This is absolutely necessary for CNCerial to work
+          <br>Please use a <a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API#browser_compatibility">supported
+            browser</a>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="firstTimeModal" tabindex="-1" aria-labelledby="firstTimeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="firstTimeModalLabel">Hello There!</h1>
+        </div>
+        <div class="modal-body text-center">
+          <p>
+          <h5 class="text-info">Welcome to CNCerial!</h4>
+            <br>It looks like this is your first time here (or at least this browser's first time). Here's a quick
+            overview.<br>
+            <br>
+            You can open a GCode (.nc) file or a configuration (.json) file with the open file button or Ctrl+O.
+            <br>
+            <br>
+            You can select a Serial/COM port with the select port button. Ensure you have a USB to Serial adapter
+            connected, and you know the port name.
+            <br>
+            Set the Serial configuration in the menu, to match the machine's settings.
+            <br>
+            You can save these to a config file, which allows you to send others your settings, or use them on another
+            computer.
+            <br>
+            In addition, your config will be saved in your browser's local storage, so you can leave and come back
+            without
+            doing it all again.
+            <br>
+            <br>
+            <br>
+            The <span class="text-info">Trim</span> feature allows you to remove whitespace, comments, and line numbers
+            from your GCode file. This can help reduce file size and upload time. CNCerial tells you the percentage of
+            the
+            file that is saved!
+            <br><br>
+            The <span class="text-info">Program Rename</span> feature allows you to change the program name in the GCode
+            file.
+            <br>
+            If you didn't give your program an O-code name (O<small>xxxx</small>) before uploading, you can type a new
+            one
+            here.
+
+            <br>
+            <br>
+            Finally, you can <span class="text-info">Send</span> your file to the machine with the button, or Ctrl+U.
+            <br>
+            It'll tell you it's progress. Big programs can take a while.
+            <br>
+            <!-- CNCerial should probably automatically add a <span class="text-info">%</span> at the beginning and end, if you don't have them already, but it doesnt :D -->
+            <br>
+            <br>
+            Also I like <span class="text-info">teal</span>
+
+
+            </p>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-info w-auto" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script src="js/script.js"></script>
+  <script src="js/main.js" type="module"></script>
+</body>
+
+</html>
