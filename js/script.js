@@ -154,11 +154,14 @@ function checkPort() {
             document.getElementById("portNameDisplay").innerHTML = "Port connected";
         }
         else {
+
             document.getElementById("portNameDisplay").innerHTML = "No port selected";
             port.forget();
+            checkReady();
         }
     } else {
         document.getElementById("portNameDisplay").innerHTML = "No port selected";
+        checkReady();
         // port.forget();
     }
 }
