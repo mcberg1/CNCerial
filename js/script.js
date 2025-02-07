@@ -355,7 +355,8 @@ function checkReady() {
     }
     if (modifyContent() != -1)
         fileSize = byteSize(modifiedContent);
-    if (fileSize > 0 && port != null && serialConfigured) {
+
+    if (fileSize > 0 && port != null && port.connected && serialConfigured) {
         document.getElementById("sendButton").classList.remove("locked");
         sizeDisplayElement = document.getElementById("fileSizeDisplay")
         if (fileSize < 1024)
