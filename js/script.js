@@ -157,11 +157,12 @@ function checkPort() {
 
             document.getElementById("portNameDisplay").innerHTML = "No port selected";
             port.forget();
-            checkReady();
+            document.getElementById("sendButton").classList.add("locked");
+            // checkReady();
         }
     } else {
         document.getElementById("portNameDisplay").innerHTML = "No port selected";
-        checkReady();
+        // checkReady();
         // port.forget();
     }
 }
