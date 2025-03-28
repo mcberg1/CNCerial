@@ -288,7 +288,7 @@ function openFile() {
             if (file.name.includes(".nc")) {
                 fileContent = content;//.split('\n');
                 progName = fileContent.split("O")[1].split('\n')[0]; //Get first instance of O command, usually signifies name, might not always work tbh
-                //progRename = progName;
+                progRename = progName;
                 document.getElementById("renameInput").placeholder = progName;;
                 updateOptions();
                 checkReady();
