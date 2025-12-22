@@ -11,7 +11,8 @@ var serialConfiguration = {
     dataBits: null,
     XON: null,
     RTS: null,
-    DTR: null
+    DTR: null,
+    storage: null
 };
 
 
@@ -146,7 +147,7 @@ function updateOptions() {
 }
 
 
-function checkPort() {
+function checkPort() { //Add autoconnect
 
     if (port != null) {
         if (port.connected) {
@@ -154,15 +155,11 @@ function checkPort() {
             document.getElementById("portNameDisplay").innerHTML = "Port connected";
         }
         else {
-
             document.getElementById("portNameDisplay").innerHTML = "No port selected";
             port.forget();
-            document.getElementById("sendButton").classList.add("locked");
-            // checkReady();
         }
     } else {
         document.getElementById("portNameDisplay").innerHTML = "No port selected";
-        // checkReady();
         // port.forget();
     }
 }
@@ -219,9 +216,23 @@ function modifyContent() {
     return (byteSize(tempContent) - byteSize(modifiedContent)); //return number of bytes removed
 }
 
+
+
+
+
+
 async function sendSerial() {
+
+
     if (sending)
         return;
+
+    if (serialConfiguration.storage <= fileSize) {
+        //Let the user know that the file is too big, so the machine should be in drip feed.
+        //Give the option to cancel or continue
+        if (!confirm("File is larger than machine storage! This is okay for drip feed, but flow control must be set correctly."))
+            return;
+    }
     console.log("send");
     const encoder = new TextEncoder();
     const writer = port.writable.getWriter();
@@ -230,17 +241,29 @@ async function sendSerial() {
     var index = 0;
     sizeDisplayElement = document.getElementById("fileSizeDisplay")
 
-    document.getElementById("mainMenu").classList.add("locked");
+
+    //Set all the children to locked:
+    const parentDiv = document.getElementById("mainMenu");
+    for (const child of parentDiv.children) {
+        child.classList.add('locked');
+    }
+
+    document.getElementById("cancelButton").classList.remove("d-none", "locked");
+
+
+
 
     modifyContent();
 
-    if (progName != progRename) {
+    if (progName != progRename) { //I think this dont work too well ngl so fixx plsss
         modifiedContent = modifiedContent.replace(progName, progRename);
     }
     var lines = modifiedContent.split('\n');
     var numLines = lines.length;
 
     for (var line of lines) {
+        if (!sending)
+            break; //This will update if we cancel
         // console.log(line);
         await writer.write(encoder.encode(line + '\n'));
         index++;
@@ -248,11 +271,23 @@ async function sendSerial() {
     }
     writer.releaseLock();
 
-    document.getElementById("mainMenu").classList.remove("locked");
+    document.getElementById("cancelButton").classList.add("d-none");
+
+    for (const child of parentDiv.children)
+        child.classList.remove('locked');
+
+
 
     sending = false;
     // done(); //play sound maybe
     checkReady();
+}
+
+function cancelSending(warn = false) {
+    if (warn)
+        if (!confirm("Cancel sending?"))
+            return;
+    sending = false;
 }
 
 function setBaud(rate) {
@@ -309,6 +344,7 @@ function updateSerialFields() {
     setParity(serialConfiguration.parity);
     setStopBits(serialConfiguration.stopBits);
     setDataBits(serialConfiguration.dataBits);
+    setStorage(serialConfiguration.storage);
     // document.getElementById("handshakeXON").checked = serialConfiguration.XON;
     document.getElementById("handshakeRTS").checked = serialConfiguration.RTS;
     localStorage.setItem("serial_config", JSON.stringify(serialConfiguration));
@@ -318,6 +354,29 @@ const flowControlChecks = document.querySelectorAll(".flowControlCheck");
 
 for (const checkbox of flowControlChecks) {
     checkbox.addEventListener("click", setFlowControl);
+}
+
+function setStorage(storage) {
+    element = document.getElementById("storageInput");
+    serialConfiguration.storage = storage;
+    exponent = 0;
+    element.innerHTML = "bytes";
+    //get exponent
+    if (storage > (10 ** 3)) {
+        exponent = 3;
+        element.innerHTML = "kBytes";
+    }
+
+    if (storage > (10 ** 6)) {
+        exponent = 6;
+        element.innerHTML = "MBytes";
+    }
+    if (storage > (10 ** 9)) {
+        exponent = 9;
+        element.innerHTML = "GBytes";
+    }
+    document.getElementById("storageInputValue").value = (Math.round((1 * storage) / (10 ** exponent)) / 1); //2 decimals 
+    checkReady();
 }
 
 function setFlowControl() {
@@ -346,6 +405,49 @@ function setStopBits(bits) {
     checkReady();
 }
 
+
+function changeStorageUnits() {
+    element = document.getElementById("storageInput");
+    current = element.innerHTML;
+    console.log(current);
+    exponent = 0;
+    if (current == "bytes") {
+        element.innerHTML = "kBytes";
+        exponent = 3;
+    }
+    else if (current == "kBytes") {
+        element.innerHTML = "MBytes";
+        exponent = 6;
+    }
+    else if (current == "MBytes") {
+        element.innerHTML = "GBytes";
+        exponent = 9;
+    }
+    else if (current == "GBytes") {
+        element.innerHTML = "bytes";
+        exponent = 0;
+    }
+
+    serialConfiguration.storage = (10 ** exponent) * document.getElementById("storageInputValue").value;
+    console.log(serialConfiguration.storage)
+    checkReady();
+}
+
+function updateStorageVal() {
+    element = document.getElementById("storageInput");
+    current = element.innerHTML;
+    exponent = 0;
+    if (current == "kBytes")
+        exponent = 3;
+    else if (current == "MBytes")
+        exponent = 6;
+    else if (current == "GBytes")
+        exponent = 9;
+    serialConfiguration.storage = (10 ** exponent) * document.getElementById("storageInputValue").value;
+    checkReady();
+}
+
+
 function checkReady() {
     localStorage.setItem("serial_config", JSON.stringify(serialConfiguration));
     var serialConfigured = false;
@@ -356,10 +458,9 @@ function checkReady() {
     }
     if (modifyContent() != -1)
         fileSize = byteSize(modifiedContent);
-
-    if (fileSize > 0 && port != null && port.connected && serialConfigured) {
+    if (fileSize > 0 && port != null && serialConfigured) {
         document.getElementById("sendButton").classList.remove("locked");
-        sizeDisplayElement = document.getElementById("fileSizeDisplay")
+        sizeDisplayElement = document.getElementById("fileSizeDisplay");
         if (fileSize < 1024)
             sizeDisplayElement.innerHTML = Math.round(fileSize) + " Bytes";
         else
@@ -368,9 +469,11 @@ function checkReady() {
     }
     else
         document.getElementById("sendButton").classList.add("locked");
+
 }
 
 function saveConfig() {
+
     JSONToFile(serialConfiguration, "NCerial_config");
     localStorage.setItem("serial_config", JSON.stringify(serialConfiguration));
 }
@@ -417,5 +520,3 @@ function getTrimLineNumbers() {
     localStorage.setItem("trimComments", trimComments);
     updateOptions()
 }
-
-

@@ -36,5 +36,13 @@ document.addEventListener("keydown",
             openFile();
         }
 
-    }); 
+        if (event.key === "Escape") {
+            if (sending) {
+                event.preventDefault();
+                console.log("escape");
+                cancelSending(true);
+            }
+        }
+
+    });
 
