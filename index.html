@@ -132,7 +132,7 @@
 
 
       <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active locked"
-        aria-current="true" id="sendButton" onclick="sendSerial();">
+        aria-current="true" id="sendButton" onclick="sendSerial(true);">
 
         <i class="d-flex bi bi-arrow-bar-up text-info h2 align-self-center m-0"></i>
 
@@ -273,24 +273,29 @@
               </div>
             </div>
 
+            <div>
+              <div
+                class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3 active "
+                data-bs-toggle="dropdown" aria-expanded="false">
 
-            <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3"
-              aria-current="true" onclick="">
+                <i class="d-flex bi bi-arrow-left-right text-info h4 align-self-center m-0"></i>
 
-              <i class="d-flex bi bi-arrow-left-right  text-info h4 align-self-center m-0"></i>
-
-              <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
-                <h6 class="m-0">Flow Control</h6>
-                <!-- <div class="form-check form-check-inline">
-                  <input class="form-check-input flowControlCheck" type="checkbox" id="handshakeXON" value="XON">
-                  <label class="form-check-label" for="handshakeXON">Software (XOFF)</label>
-                </div> -->
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input flowControlCheck" type="checkbox" id="handshakeRTS" value="RTS">
-                  <label class="form-check-label" for="handshakeRTS">Hardware (RTS)</label>
+                <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                  <h6 class="m-0">Flow Control</h6>
+                  <small class="opacity-50 text-nowrap" id="flowControlDisplayElement">Not Set</small>
                 </div>
+                <ul class="dropdown-menu">
+                  <li>
+                    <p class="dropdown-item" onclick="setFlowControl(true)">Hardware (RTS)</p>
+                  </li>
+                  <li>
+                    <p class="dropdown-item" onclick="setFlowControl(false)">Software (XON/XOFF)</p>
+                  </li>
+                </ul>
               </div>
             </div>
+
+
 
             <div class="list-group-item list-group-item-action d-flex gap-3 p-3 border-info border-2 rounded-3"
               aria-current="true" onclick="">
@@ -303,7 +308,7 @@
                 <div class="input-group w-50 ">
                   <input type="text" class="form-control" placeholder="0" aria-label="Machine Storage"
                     aria-describedby="storageInput" id="storageInputValue" onchange="updateStorageVal();">
-                  <span class="input-group-text" id="storageInput" onclick="changeStorageUnits();">bytes</span>
+                  <span class="input-group-text text-info border-info" id="storageInput" onclick="changeStorageUnits();">bytes</span>
                 </div>
 
               </div>
@@ -428,7 +433,7 @@
 
 
 
-  <script src="js/script.js"></script>
+  <script src="js/script.refactored.js"></script>
   <script src="js/main.js" type="module"></script>
 </body>
 
