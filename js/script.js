@@ -425,7 +425,7 @@ function updateSerialFields() {
     setStopBits(serialConfiguration.stopBits);
     setDataBits(serialConfiguration.dataBits);
     setStorage(serialConfiguration.storage);
-    setFlowControl(serialConfiguration.XON);
+    setFlowControl(serialConfiguration.RTS);
     localStorage.setItem("serial_config", JSON.stringify(serialConfiguration));
 }
 
@@ -479,8 +479,8 @@ function setStopBits(bits) {
 
 
 function setFlowControl(val) {
-    serialConfiguration.XON = val;
-    serialConfiguration.RTS = !val;
+    serialConfiguration.XON = !val;
+    serialConfiguration.RTS = val;
     flowControlDisplayElement = document.getElementById("flowControlDisplayElement");
     flowControlDisplayElement.innerHTML = !val ? "Software (XON/XOFF)" : "Hardware (RTS)";
     flowControlMode = (!val ? "software" : "hardware");
